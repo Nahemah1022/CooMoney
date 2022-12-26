@@ -1,0 +1,1544 @@
+openapi: 3.0.0
+info:
+  description: 1. 在創建社團或者建立收支時，必須要在要求完成後再執行各自的image API，原本的要求只會把url存入，image API 則是把圖片上傳 
+    2. 有些地方是傳使用者名稱而不是ID，要麻煩注意一下
+    3. 在傳tag的font awesome 程式碼時，必須要將其中的雙引號改成單引號，不然會衝突
+    4. 日期的規範是 yyyy-mm-dd
+    5. parameters 有分query 或者 path，要麻煩注意一下
+  version: "1.0.0-oas3"
+  title: CooMoney API Documentation
+servers: 
+  - url: https://coomoney.herokuapp.com/api/v1
+paths:  
+  '/user/signUp':
+    post:
+      tags:
+        - User Module
+      summary: 註冊
+      description: 使用者註冊
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User signUp successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  '/user/login':
+    post:
+      tags:
+        - User Module
+      summary: 登入
+      description: 使用者使用email與password登入
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: User login successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  '/user/getUserByUsername/{username}':
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User Module
+      summary: 獲得使用者
+      description: 獲得使用者資訊
+      parameters:
+        - name: username
+          in: path
+          description: 注意此處使用片段使用者名稱搜尋
+          schema:
+            type: string
+          required: true
+      responses:
+         '200':
+           description: get users successfully
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/ApiResponse'
+         '400':
+           description: Invalid Fields
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/ApiResponse'
+         '401':
+           description: Not authenticated
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/ApiResponse'
+         '500':
+           description: Internal Server Error
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/ApiResponse' 
+  '/club/createClub':
+      post:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 建立社團
+        description: 使用者創建社團(若有圖片則搭配image使用，兩個api都要上傳圖片)
+        requestBody:
+          required: true
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  clubName:
+                    type: string
+                  clubImage:
+                    type: string
+                    format: binary
+                  clubMembers:
+                    type: array
+                    items:
+                      type: string
+                      description: username but not userid
+        responses:
+          '200':
+            description: club create successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/getClub':
+      get:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 獲得社團資訊
+        description: 獲得使用者參與的社團
+        responses:
+          '200':
+            description: club get successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/getClubProject/{clubID}':
+      get:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 獲得社團專案
+        description: 獲得社團中的專案
+        parameters:
+          - in: path
+            name: clubID
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: project get successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/image':
+      get:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 社團照片
+        description: 上傳社團照片(跟在createClub後面使用)
+        requestBody:
+          required: true
+          content:
+            multipart/formdata:
+              schema:
+                type: object
+                properties:
+                  clubImage:
+                    type: string
+                    format: binary
+        responses:
+          '200':
+            description: club photo upload successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/getClubMembers':
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Club Module
+      summary: 獲得成員
+      description: 獲得社團的所有使用者資訊
+      parameters:
+        - in: query
+          name: clubID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user info in club get successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  '/club/addClubMembers':
+      put:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 新增成員
+        description: 新增社團成員
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    required: true
+                    description: 注意是傳使用者名稱
+        responses:
+          '200':
+            description: club member add successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/addPassbook':
+      put:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 新增帳簿 
+        description: 新增社團的帳簿
+        parameters:
+          - in: query
+            required: true
+            name: clubID
+            schema:
+              type: string
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  passbookName:
+                    type: string
+                    required: true
+                  passbookBalance:
+                    type: number
+                    required: true
+        responses:
+          '200':
+            description: 成功新增帳簿
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/getPassbook':
+      get:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 獲得帳簿
+        description: 獲得所有社團可用帳戶資訊
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: passbook get successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/updateIntro':
+      put:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 修改社團介紹
+        description: 修改社團介紹
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clubIntro:
+                    type: string
+                    required: true
+        responses:
+          '200':
+            description: club introduction update successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/addAnnounce':
+      put:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 新增公告
+        description: 新增社團公告
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    type: string
+                    required: true
+                  date:
+                    type: string
+                    required: true
+        responses:
+          '200':
+            description: club announcement add successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/deleteAnnounce':
+      delete:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 刪除公告
+        description: 刪除此公告
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+          - in: query
+            name: announceID
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: club announcement delete successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/getAnnounce':
+      get:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 獲得公告
+        description: 獲得所有社團公告
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: club get successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/updateAnnounce':
+      put:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 編輯公告
+        description: 編輯目標公告
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+          - in: query
+            name: announceID
+            required: true
+            schema:
+              type: string
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  info:
+                    type: string
+                    required: true
+                  date:
+                    type: string
+                    required: true
+        responses:
+          '200':
+            description: club get successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/searchClub':
+      get:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 搜尋社團
+        description: 搜尋使用者尚未加入的社團
+        parameters:
+          - in: query
+            name: clubName
+            required: true
+            description: 注意這裡傳的是使用者輸入的片段社團名稱
+            schema:
+              type: string
+        responses:
+          '200':
+            description: club get successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/joinApplication':
+      put:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 入社申請
+        description: 使用者加入社團申請
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    required: true
+                  reason: 
+                    type: string
+                    required: true
+        responses:
+          '200':
+            description: 社團申請成功發出
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/getApplication':
+      get:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 入社申請列表
+        description: 獲得社團所有入社申請列表
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: applications get successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/club/updateApplication':
+      put:
+        security:
+          - bearerAuth: []
+        tags:
+          - Club Module
+        summary: 入社申請審核
+        description: 入社申請審核
+        parameters:
+          - in: query
+            name: clubID
+            required: true
+            schema:
+              type: string
+          - in: query
+            name: applicationID
+            required: true
+            schema:
+              type: string
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    required: true
+                    enum:
+                      - APPROVED
+                      - REJECTED
+        responses:
+          '200':
+            description: 審核成功
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '400':
+            description: Invalid Fields
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponse'
+  '/project/createProject':
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Project Module
+      summary: 新增專案
+      description: 在社團中新增一個專案
+      parameters:
+        - in: query
+          name: clubID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectName:
+                  type: string
+                  required: true
+                projectTheme:
+                  type: string
+                  required: true
+                projectBudget:
+                  type: number
+                  required: true
+                projectChecker:
+                  type: array
+                  items: 
+                    type: string
+                projectClub:
+                  type: string
+                  description: 社團id
+                projectStatus:
+                  type: string
+                  enum:
+                    - 'ONGOING'
+                    - 'DONE'
+                  description: 專案目前是否正在進行中
+                projectRevenue:
+                  type: array
+                  description: 收支id
+                  items:
+                    type: string
+                projectTags:
+                  type: array
+                  description: 這裡所傳的是font awesome程式碼(注意程式碼中的雙引號必須改成單引號不然當成字串儲存會有問題)
+                  items:
+                    type: object
+                    properties:
+                      tagName:
+                        type: string
+                      tagCode: 
+                        type: string
+      responses:
+        '200':
+          description: club project create successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  '/project/endProject':
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Project Module
+      summary: 關閉專案
+      description: 將專案狀態設為DONE
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功關閉專案
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse' 
+  '/project/addChecker':
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Project Module
+      summary: 新增專案審查者
+      description: 新增社員為專案審查者
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectChecker:
+                  type: array
+                  description: 注意此處是傳username組成的矩陣
+                  items: 
+                    type: string
+      responses:
+        '200':
+          description: 加入審查者成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'   
+  '/project/getProject':
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Project Module
+      summary: 獲得專案
+      description: 獲得目標專案(一個)
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: get project successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'  
+  '/project/updateProjectNameAndTheme':
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Project Module
+      summary: 修改專案名稱與主題
+      description: 修改目標專案名稱與主題
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectName:
+                  type: string
+                projectTheme:
+                  type: string
+      responses:
+        '200':
+          description: update project successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'  
+  '/project/addNewTags':
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Project Module
+      summary: 新增收支種類
+      description: 新增收支種類選項
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectTags:
+                  type: array
+                  description: 這裡所傳的是font awesome程式碼(注意程式碼中的雙引號必須改成單引號不然當成字串儲存會有問題)
+                  items:
+                    type: object
+                    properties:
+                      tagName:
+                        type: string
+                      tagCode:
+                        type: string
+      responses:
+        '200':
+          description: add tag successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse' 
+  '/project/getProjectTags':
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Project Module
+      summary: 獲得收支種類
+      description: 獲得收支種類
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: get tags successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse' 
+  '/revenue/createRevenue':
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Revenue Module
+      summary: 新增收支
+      description: 新增收支進專案中(必須在完成後發起image，image負責上傳照片，這裡只是負責記錄url)
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/formdata:
+            schema:
+              type: object
+              properties:
+                revenueTitle:
+                  type: string
+                  required: true
+                revenueTag: 
+                  type: string
+                  required: true
+                revenueDate:
+                  type: string
+                  required: true
+                  description: yyyy-mm-dd
+                revenueCost:
+                  type: number
+                  required: true
+                  description: 正為支出、負為收入
+                revenuePassbook:
+                  type: string
+                  required: true
+                  description: 只需傳入帳簿名稱就好
+                revenueDescription:
+                  type: string
+                  required: true
+                revenueEvidence:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: create revenue successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse' 
+  '/revenue/image':
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Revenue Module
+      summary: 上傳照片
+      description: 上傳收支證明照片
+      requestBody:
+        required: true
+        content:
+          multipart/formdata:
+            schema:
+              type: object
+              properties:
+                revenueEvidence:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: image upload successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  '/revenue/updateRevenue':
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Revenue Module
+      summary: 審核收支
+      description: 審核社團收支
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: clubID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/formdata:
+            schema:
+              type: object
+              properties:
+                revenueID:
+                  type: string
+                revenueStatus:
+                  type: string
+                  enum: 
+                    - APPROVED
+                    - REJECTED
+      responses:
+        '200':
+          description: revenue update successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  '/revenue/getAllRevenue':
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Revenue Module
+      summary: 獲得所有收支
+      description: 獲得專案所有收支資訊
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: all revenue get successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  '/revenue/getTenRevenue':
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Revenue Module
+      summary: 獲得前十收支
+      description: 獲得專案最新十個收支資訊
+      parameters:
+        - in: query
+          name: projectID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ten revenue get successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid Fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+components:
+  schemas:
+    User:
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string 
+        userPhoto:
+          type: string
+        userGender:
+          type: string
+          description: gender of user
+          enum: 
+            - MALE
+            - FEMALE
+        userBirth: 
+          type: string
+        participateClubID:
+          type: array
+          items:
+            type: string
+    Club:
+      properties:
+        clubName: 
+          type: string
+        clubImage:
+          type: string
+        clubMembers:
+          type: array
+          items:
+            type: string
+        clubProjects:
+          type: array
+          items:
+            type: string
+        clubIntro:
+          type: string
+        clubPassbook:
+          type: array
+          items:
+            type: object
+            properties:
+              passbookName:
+                type: string
+              passbookBalance:
+                type: number
+        clubApplication:
+          type: array
+          items:
+            type: object
+            properties:
+              applicant:
+                type: string
+              date:
+                type: string
+              reason:
+                type: string
+        clubAnnounce:
+          type: array
+          items:
+            type: object
+            properties:
+              establisher:
+                type: string
+              info:
+                type: string
+              date:
+                type: string
+              id:
+                type: number
+    Project:
+      properties:
+        projectName:
+          type: string
+        projectTheme:
+          type: string
+        projectBudget:
+          type: number
+          minimum: 0
+        projectStatus:
+          type: string
+          enum: 
+            - ONGOING
+            - DONE
+        projectChecker:
+          type: array
+          items: 
+            type: string
+        projectClub:
+          type: string
+        projectRevenue:
+          type: array
+          items:
+            type: string
+        projectTags:
+          type: array
+          items:
+            type: object
+            properties:
+              tagName: 
+                type: string
+              tagCode: 
+                type: string
+    Revenue:
+      properties:
+        revenueTitle: 
+          type: string
+        revenueID: 
+          type: number
+        revenueTag: 
+          type: string
+        revenueCost: 
+          type: number
+        revenueDescription: 
+          type: string
+        revenueEvidence: 
+          type: string
+        revenueYear: 
+          type: number
+        revenueMonth: 
+          type: number
+        revenueDay: 
+          type: number
+        revenuePrincipal: 
+          type: string
+          description: principal of this revenue (userid)
+        revenueStatus:
+          type: string
+          enum:
+            - PENDING
+            - APPROVED
+            - REJECTED
+    ApiResponse:
+      type: object
+      properties:
+        status:
+          type: number
+          description: return HTTP status of request
+        message:
+          type: string
+          description: return message of request
+        data:
+          type: object
+          description: return data of request
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    
