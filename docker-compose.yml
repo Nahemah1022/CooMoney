@@ -1,0 +1,36 @@
+version: "3"
+services:
+  frontend:
+    image: coomoney/frontend:v1.0
+    build: ./frontend
+    networks:
+      - coomoney
+    expose:
+      - "8080"
+    environment:
+      - API_URL=backend:3000
+  backend:
+    image: coomoney/backend:v1.0
+    build: ./backend
+    networks:
+      - coomoney
+    expose:
+      - "3000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongodb
+  mongodb:
+    image: "mongo:4.0"
+    restart: always
+    networks:
+      - coomoney
+    expose:
+      - "27017"
+    volumes:
+      - "./data:/data/db"
+      # - "./backend/data:/data"
+
+networks:
+  coomoney:
+    external: true
