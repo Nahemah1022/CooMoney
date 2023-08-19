@@ -9,6 +9,8 @@ services:
       - "8080"
     environment:
       - API_URL=backend:3000
+    volumes:
+      - "./frontend/nginx/nginx.conf:/opt/bitnami/nginx/conf/server_blocks/frontend.conf"
   backend:
     image: coomoney/backend:v1.0
     build: ./backend
