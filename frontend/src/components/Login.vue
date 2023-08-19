@@ -31,6 +31,7 @@
         </div>
       </div>
 
+      <button class="guest-btn" @click="LoginAsGuest">Guest</button>
       <button @click="Login">Log In</button>
       <p class="dont" id="dont">
         Don't have an account?
@@ -120,6 +121,13 @@ export default {
           }
         }
       }
+    },
+    LoginAsGuest() {
+      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZTAxOTA5MTg0YmI4M2QxYThmYTFiMyIsImlhdCI6MTY5MjQ3OTUwOSwiZXhwIjozMzg0OTYyNjE4fQ.hIn_UlxoDrXUe3HnB7tzp-q4pkt2Fiwb4iQsnuJFXkM";
+      this.$cookies.set("token", token, "1d");
+      localStorage.setItem("token", token);
+      axios.defaults.headers['Authorization'] = 'Bearer ' + token;
+      this.$router.push("/Home");
     },
     async Login() {
       let response = await this.$store.dispatch("login");
@@ -224,45 +232,13 @@ export default {
     border-radius: 30px;
     margin-top: 0vh;
     margin-bottom: 10vh;
+    .guest-btn {
+      color: rgb(106, 106, 248);
+    }
   }
   p {
     color: #8d8d8d;
     text-align: center;
-  }
-}
-@keyframes shake {
-  0% {
-    transform: translate(1px, 1px) rotate(0deg);
-  }
-  10% {
-    transform: translate(-1px, -2px) rotate(-1deg);
-  }
-  20% {
-    transform: translate(-3px, 0px) rotate(1deg);
-  }
-  30% {
-    transform: translate(3px, 2px) rotate(0deg);
-  }
-  40% {
-    transform: translate(1px, -1px) rotate(1deg);
-  }
-  50% {
-    transform: translate(-1px, 2px) rotate(-1deg);
-  }
-  60% {
-    transform: translate(-3px, 1px) rotate(0deg);
-  }
-  70% {
-    transform: translate(3px, 1px) rotate(-1deg);
-  }
-  80% {
-    transform: translate(-1px, -1px) rotate(1deg);
-  }
-  90% {
-    transform: translate(1px, 2px) rotate(0deg);
-  }
-  100% {
-    transform: translate(1px, -2px) rotate(-1deg);
   }
 }
 </style>

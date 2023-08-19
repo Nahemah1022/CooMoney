@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 axios.defaults.timeout = 10000
-axios.defaults.baseURL = 'https://coomoney.nahemah.com/api/v1'
+axios.defaults.baseURL = 'https://cm.nahemah.com/api/v1'
 // axios.defaults.baseURL = 'http://localhost:3000/api/v1'
 // axios.defaults.baseURL = process.env.API_URL
 // axios.defaults.baseURL = 'http://backend/api/v1'
