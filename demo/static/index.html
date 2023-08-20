@@ -1,9 +1,61 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" type="image/png" href="./favicon.png"/>
         <title>CooMoney Demo</title>
+        <style>
+            body {
+                font-family: 'Poppins', sans-serif;
+            }
+
+            .container {
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: space-evenly;
+                align-items: center;
+            }
+
+            .description {
+                height: 896px;
+                max-width: 55vw;
+            }
+        </style>
     </head>
     <body>
-        <iframe src="https://cm.nahemah.com" width="414px" height="896px" frameborder="0"></iframe>
+        <div class="container">
+            <iframe src="https://cm.nahemah.com" width="400px" height="800px" style="border: 10px solid black; border-radius: 50px;" frameborder="1px"></iframe>
+            <div class="description">
+                <h1>Welcome to CooMoney, Your Path to Streamlined Financial Excellence</h1>
+                <i>Watch the <a href="https://github.com/Nahemah1022/CooMoneyFrontend/blob/master/demo/demo.gif" target="_blank">demo video</a> here, or try out the application on the left.</i>
+                <section class="introduction">
+                    <h2>Empowering Financial Management for Organizations</h2>
+                    <p>Explore the Future of Finance with CooMoney</p>
+                    <p>CooMoney presents an advanced web-based financing application tailored to the dynamic needs of modern large-scale organizations. Our platform redefines how finances are managed, offering a comprehensive solution for overseeing and analyzing diverse financial activities while harnessing the potential of shared funding sources.</p>
+                </section>
+                <section class="key-features">
+                    <h2>Key Features at a Glance</h2>
+                    <p>Experience the Power of CooMoney's Features</p>
+                    <ul>
+                        <li>Expense Tracking: Seamlessly track expenses across various projects and initiatives, gaining real-time insights into spending patterns.</li>
+                        <li>Budget Management: Set, monitor, and optimize budgets for individual projects or across the organization, ensuring efficient resource allocation.</li>
+                        <li>Financial Reporting: Generate insightful reports that provide a clear overview of your organization's financial health, aiding informed decision-making.</li>
+                        <li>Multi-Project Integration: Simultaneously manage financial aspects of multiple ongoing projects under a unified platform, fostering collaboration and synergy.</li>
+                    </ul>
+                </section>
+                <section class="technologies-used">
+                    <h2>Technologies Behind CooMoney</h2>
+                    <p>CooMoney is powered by a robust technology stack that ensures seamless functionality and performance:</p>
+                    <ul>
+                        <li>Front-End: Built using Vue.js, providing a responsive and interactive user interface.</li>
+                        <li>Back-End: Leveraging the capabilities of Node.js to handle data processing and server-side logic.</li>
+                        <li>Database: MongoDB serves as the reliable and efficient data store for CooMoney's operations.</li>
+                        <li>Infrastructure: Hosted on AWS EC2 instances for scalability and reliability.</li>
+                        <li>Storage: AWS S3 is used for secure and scalable storage of files and media.</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
     </body>
 </html>
