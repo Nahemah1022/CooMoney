@@ -55,8 +55,9 @@ export default {
   margin: 2vh auto;
   border-radius: 8px;
   box-shadow: 0 0 12px #797878;
-  background-size: cover;
-  background-position: bottom;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   opacity: 0.7;
   transition: 0.3s;
   &.list {

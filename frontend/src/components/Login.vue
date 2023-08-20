@@ -231,10 +231,9 @@ export default {
     line-height: 40px;
     border-radius: 30px;
     margin-top: 0vh;
-    margin-bottom: 10vh;
-    .guest-btn {
-      color: rgb(106, 106, 248);
-    }
+  }
+  .guest-btn {
+    background-color: rgb(106, 106, 248);
   }
   p {
     color: #8d8d8d;

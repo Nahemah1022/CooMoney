@@ -55,7 +55,7 @@
     <BlurMask :show="isAddingMember || judge"></BlurMask>
     <div class="upper" :style="{ backgroundImage: 'url(' + preClub.clubImage + ')' }">
       <div class="info">
-        <img class="avatar" src="https://lh3.googleusercontent.com/70LoUmt3rWs1tYgCVbdIvhTPbmBBoCRfPl-BWzV84WAJXUELwSuc0--Q1ynlFZOCf7Cc" />
+        <img class="avatar" :src="require('@/assets/image/LOGO.png')" alt="Logo" />
         <div class="space"></div>
         <h1>{{ club.name }}</h1>
       </div>
@@ -407,7 +407,8 @@ $tabHeight: 36px;
     opacity: 0.8;
     border: 1px solid #000;
     background-position: center;
-    background-size: cover;
+    background-size: contain;
+    background-repeat: no-repeat;
     .info {
       position: absolute;
       left: 2vw;
