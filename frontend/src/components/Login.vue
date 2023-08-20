@@ -122,13 +122,6 @@ export default {
         }
       }
     },
-    LoginAsGuest() {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZTAxOTA5MTg0YmI4M2QxYThmYTFiMyIsImlhdCI6MTY5MjQ3OTUwOSwiZXhwIjozMzg0OTYyNjE4fQ.hIn_UlxoDrXUe3HnB7tzp-q4pkt2Fiwb4iQsnuJFXkM";
-      this.$cookies.set("token", token, "1d");
-      localStorage.setItem("token", token);
-      axios.defaults.headers['Authorization'] = 'Bearer ' + token;
-      this.$router.push("/Home");
-    },
     async Login() {
       let response = await this.$store.dispatch("login");
       console.log(response);
@@ -231,9 +224,6 @@ export default {
     line-height: 40px;
     border-radius: 30px;
     margin-top: 0vh;
-  }
-  .guest-btn {
-    background-color: rgb(106, 106, 248);
   }
   p {
     color: #8d8d8d;
