@@ -97,18 +97,18 @@ module.exports = {
     },
     getAllRevenue: async ({ projectID }) => {
         const project = await Project.findById(projectID);
-        const revenues = await Promise.all(project.projectRevenue.map(async (pr) => {
-            return await Revenue.findById(pr);
-        }));
-        // let revenues = [];
-        // for(i=0; i<project.projectRevenue.length; i++){
-        //     let revenue = await Revenue.findById(project.projectRevenue[i]);
-        //     revenues.push(revenue);
-        //     console.log(i);
-        // }
+        // const revenues = await Promise.all(project.projectRevenue.map(async (pr) => {
+        //     return await Revenue.findById(pr);
+        // }));
+        let revenues = [];
+        for(i=0; i<project.projectRevenue.length; i++){
+            let revenue = await Revenue.findById(project.projectRevenue[i]);
+            revenues.push(revenue);
+            // console.log(i);
+        }
 
         // let result = await dbHelper.formatDBData(revenues);
-        console.log(revenues);
+        // console.log(revenues);
         return revenues;
     },
     getTenRevenue: async ({ projectID }) => {
